@@ -1,0 +1,16 @@
+{% extends 'layout.html'%}
+
+{%block body%}
+	<h1>Topics</h1>
+	<ul>
+	{% for article in articles%}
+		<li>{{article.title}}</li>
+		<a href="{{article.url}}">here</a>
+		<li></li>
+		<img src="http://www.purplemath.com/modules/{{article.img}}">
+	{% endfor %}		
+	</ul>
+{% endblock %}
+
+
+<!-- <img src="http://www.purplemath.com/quads/+{{article.img}}"> -->
