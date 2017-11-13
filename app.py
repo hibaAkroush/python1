@@ -50,23 +50,32 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 	if request.method == 'POST':
+
 		username = request.form['username']
 		password_actual = request.form['password']
+		if username:
+			print(username)
+			print(password_actual)
+		cursor = mariadb_connection.cursor(buffered=True,dictionary=True)
+		cursor.execute("SELECT * FROM users WHERE username = %s", [username])
+		data = cursor.fetchone()
+		if data:
+			print data["password"]
+		password = data["password"]
+		if sha256_crypt.verify(password_actual, password):
+			print('password matched')
+			return redirect(url_for('home'))
+		else:
+			print('password not matched')
+			return render_template('login.html')
 
-		cursor = mariadb_connection.cursor()
-		users = cursor.execute("SELECT * FROM users WHERE username=%s", [username])
-
-		if users > 0:
-			data = cursor.fetchone()
-			password = data["password"]
-
-			if sha256_crypt.verify(password_actual, password):
-				app.logger.info('password matched')
-
-	else: 
-		app.logger.info(' no user')
 
 	return render_template('login.html')	
+
+
 if __name__ == "__main__":
 	app.secret_key='secret123'
 	app.run()
+
+
+
