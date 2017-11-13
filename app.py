@@ -36,7 +36,7 @@ def register():
 
 		#cursor
 		cursor = mariadb_connection.cursor()
-		cursor.excute("INSERT INTO users(name, email, username, password) VALUES (%s, %s, %s, %s)", (name, email, username, password))
+		cursor.execute("INSERT INTO users(name, email, username, password) VALUES (%s, %s, %s, %s)", (name, email, username, password))
 
 		mariadb_connection.commit()
 
@@ -44,8 +44,9 @@ def register():
 
 		flash("youy are now registered and can login")
 
-		redirect(url_for('index'))
+		redirect(url_for('home'))
 	return render_template('register.html', form=form)
 
 if __name__ == "__main__":
-    app.run()
+	app.secret_key='secret123'
+	app.run()
