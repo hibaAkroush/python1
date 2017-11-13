@@ -66,7 +66,7 @@ def login():
 			session['loggedin'] = True
 			session['username'] = username
  			flash('password matched')
-			return redirect(url_for('home'))
+			return redirect(url_for('topics'))
 		else:
 			flash('password not matched')
 			return render_template('login.html')
@@ -74,6 +74,15 @@ def login():
 
 	return render_template('login.html')	
 
+@app.route('/logout')
+def logout():
+	session.clear()
+	flash("loggewd ouuut")
+	return redirect(url_for('login'))
+
+@app.route('/topics')
+def topics():
+	return render_template('topics.html')
 
 if __name__ == "__main__":
 	app.secret_key='secret123'
