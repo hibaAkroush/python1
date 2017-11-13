@@ -13,9 +13,32 @@ mariadb_connection = mariadb.connect(user='root', database='python1')
 
 Articles = Articles()
 
-@app.route("/")
-def home():
-    return render_template('home.html',articles = Articles)
+@app.route("/", methods=['GET', 'POST'])
+def login():
+	if request.method == 'POST':
+
+		username = request.form['username']
+		password_actual = request.form['password']
+		if username:
+			print(username)
+			print(password_actual)
+		cursor = mariadb_connection.cursor(buffered=True,dictionary=True)
+		cursor.execute("SELECT * FROM users WHERE username = %s", [username])
+		data = cursor.fetchone()
+		if data:
+			print data["password"]
+		password = data["password"]
+		if sha256_crypt.verify(password_actual, password):
+			session['loggedin'] = True
+			session['username'] = username
+ 			flash('password matched')
+			return redirect(url_for('topics'))
+		else:
+			flash('password not matched')
+			return render_template('login.html')
+		cursor.close()
+
+	return render_template('login.html')	
 
 class registerForm(Form):
     name = StringField(u'First Name', validators=[validators.Length(min=1, max=50)])
@@ -48,32 +71,8 @@ def register():
 		return redirect(url_for('home'))
 	return render_template('register.html', form=form)
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-	if request.method == 'POST':
+# @app.route('/login', methods=['GET', 'POST'])
 
-		username = request.form['username']
-		password_actual = request.form['password']
-		if username:
-			print(username)
-			print(password_actual)
-		cursor = mariadb_connection.cursor(buffered=True,dictionary=True)
-		cursor.execute("SELECT * FROM users WHERE username = %s", [username])
-		data = cursor.fetchone()
-		if data:
-			print data["password"]
-		password = data["password"]
-		if sha256_crypt.verify(password_actual, password):
-			session['loggedin'] = True
-			session['username'] = username
- 			flash('password matched')
-			return redirect(url_for('topics'))
-		else:
-			flash('password not matched')
-			return render_template('login.html')
-		cursor.close()
-
-	return render_template('login.html')	
 
 def is_logged_in(f):
     @wraps(f)
@@ -94,7 +93,7 @@ def logout():
 @app.route('/topics')
 @is_logged_in
 def topics():
-	return render_template('topics.html')
+	return render_template('topics.html', articles = Articles)
 
 if __name__ == "__main__":
 	app.secret_key='secret123'
