@@ -63,12 +63,14 @@ def login():
 			print data["password"]
 		password = data["password"]
 		if sha256_crypt.verify(password_actual, password):
-			print('password matched')
+			session['loggedin'] = True
+			session['username'] = username
+ 			flash('password matched')
 			return redirect(url_for('home'))
 		else:
-			print('password not matched')
+			flash('password not matched')
 			return render_template('login.html')
-
+		cursor.close()
 
 	return render_template('login.html')	
 
