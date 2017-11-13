@@ -44,9 +44,29 @@ def register():
 
 		flash("youy are now registered and can login")
 
-		redirect(url_for('home'))
+		return redirect(url_for('home'))
 	return render_template('register.html', form=form)
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+	if request.method == 'POST':
+		username = request.form['username']
+		password_actual = request.form['password']
+
+		cursor = mariadb_connection.cursor()
+		users = cursor.execute("SELECT * FROM users WHERE username=%s", [username])
+
+		if users > 0:
+			data = cursor.fetchone()
+			password = data["password"]
+
+			if sha256_crypt.verify(password_actual, password):
+				app.logger.info('password matched')
+
+	else: 
+		app.logger.info(' no user')
+
+	return render_template('login.html')	
 if __name__ == "__main__":
 	app.secret_key='secret123'
 	app.run()
