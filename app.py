@@ -3,6 +3,7 @@ from data import Articles
 import mysql.connector as mariadb
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
+from functools import wraps
 
 app = Flask(__name__)
 
@@ -74,6 +75,16 @@ def login():
 
 	return render_template('login.html')	
 
+def is_logged_in(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if 'loggedin' in session:
+            return f(*args, **kwargs)
+        else:
+            flash('Please login')
+            return redirect(url_for('login'))
+    return wrap
+
 @app.route('/logout')
 def logout():
 	session.clear()
@@ -81,6 +92,7 @@ def logout():
 	return redirect(url_for('login'))
 
 @app.route('/topics')
+@is_logged_in
 def topics():
 	return render_template('topics.html')
 
