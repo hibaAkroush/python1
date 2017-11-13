@@ -1,10 +1,14 @@
 from flask import Flask, render_template, flash, redirect, url_for, session, logging, request
 from data import Articles
-from flask_mysqldb import MySQL
+import mysql.connector as mariadb
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 
 app = Flask(__name__)
+
+#db config
+mariadb_connection = mariadb.connect(user='root', database='python1')
+
 
 Articles = Articles()
 
@@ -25,7 +29,22 @@ class registerForm(Form):
 def register():
 	form  = registerForm(request.form)
 	if request.method == 'POST' and form.validate():
-		return render_template('register.html')
+		name = form.name.data
+		username = form.username.data
+		email = form.email.data
+		password = sha256_crypt.encrypt(str(form.password.data))
+
+		#cursor
+		cursor = mariadb_connection.cursor()
+		cursor.excute("INSERT INTO users(name, email, username, password) VALUES (%s, %s, %s, %s)", (name, email, username, password))
+
+		mariadb_connection.commit()
+
+		cursor.close()
+
+		flash("youy are now registered and can login")
+
+		redirect(url_for('index'))
 	return render_template('register.html', form=form)
 
 if __name__ == "__main__":
