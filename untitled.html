@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+<script type="text/javascript">
+	
+function robotPaths (n) {
+  if(n === 1 || n === 2){
+    return n
+  }
+  matrix = makeBoard(n)
+  console.log(matrix)
+  // fill first row and collonm with ones
+  for (var i = 0; i < matrix[0].length; i++) {
+  	matrix[0][i] = 1
+  }
+  for (var i = 0; i < matrix.length; i++) {
+  	matrix[i][0] = 1
+  }
+  function resursion (matrix , j){
+
+    if(matrix[n-1][n-1]){
+      var w = matrix[n-1][n-1];
+      return w;
+    }
+  for (var i = j; i < matrix[0].length; i++) {
+  	matrix[j][i] = matrix[j-1][i] + matrix[j][i-1];
+  	  console.log(matrix)
+  }
+  for (var i = j; i < matrix.length; i++) {
+  	matrix[i][j] = matrix[j-1][i] + matrix[j][i-1];
+  	  console.log(matrix)
+  }
+  j = j + 1
+  return resursion(matrix, j)
+  }
+  resursion(matrix, 1)
+  
+}
+function makeBoard(n) {
+  var board = [];
+  for (var i = 0; i < n; i++) {
+    board.push([]);
+    for (var j = 0; j < n; j++) {
+      board[i].push(false);
+    }
+  }
+  board.togglePiece = function(i, j) {
+    this[i][j] = !this[i][j];
+  }
+  board.hasBeenVisited = function(i, j) {
+    return !!this[i][j];
+  }
+  return board;
+}
+</script>
+</body>
+</html>
