@@ -4,10 +4,11 @@
 	<h1>Topics</h1>
 	<ul>
 	{% for article in articles%}
-		<li>{{article.title}}</li>
-		<a href="{{article.url}}">here</a>
-		<li></li>
-		<img src="http://www.purplemath.com/modules/{{article.img}}">
+
+		<li><h3>Topic Title: {{article.title}}</h3></li>
+		<h4><a href="{{article.url}}">to access website click here</a></h4>
+		<p>Topic Content: {{article.content}}</p>
+		<img height="200px" width="250px" src="http://www.mathhelp.com/{{article.img}}">
 	{% endfor %}		
 	</ul>
 {% endblock %}
